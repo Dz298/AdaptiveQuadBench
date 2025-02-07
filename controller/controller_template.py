@@ -2,11 +2,13 @@
 Imports
 """
 import numpy as np
+from abc import ABC, abstractmethod
 from scipy.spatial.transform import Rotation  # This is a useful library for working with attitude.
 
-class MultirotorControlTemplate(object):
+class MultirotorControlTemplate(ABC):
     """
-    The controller is implemented as a class with two required methods: __init__() and update(). 
+    Abstract base class for multirotor controllers.
+    The controller is implemented with two required abstract methods: __init__() and update(). 
     The __init__() is used to instantiate the controller, and this is where any model parameters or 
     controller gains should be set. 
     In update(), the current time, state, and desired flat outputs are passed into the controller at 
@@ -20,14 +22,69 @@ class MultirotorControlTemplate(object):
     """
     def __init__(self, vehicle_params):
         """
-        Use this constructor to save vehicle parameters, set controller gains, etc. 
+        Constructor to save vehicle parameters.
+        
         Parameters:
             vehicle_params, dict with keys specified in a python file under /rotorpy/vehicles/
-
         """
+        # Quadrotor physical parameters.
+        # Inertial parameters
+        self.mass = vehicle_params['mass']  # kg
+        self.Ixx = vehicle_params['Ixx']   # kg*m^2
+        self.Iyy = vehicle_params['Iyy']   # kg*m^2
+        self.Izz = vehicle_params['Izz']   # kg*m^2
+        self.Ixy = vehicle_params['Ixy']   # kg*m^2
+        self.Ixz = vehicle_params['Ixz']   # kg*m^2
+        self.Iyz = vehicle_params['Iyz']   # kg*m^2
 
+        # Frame parameters
+        self.c_Dx = vehicle_params['c_Dx']  # drag coeff, N/(m/s)**2
+        self.c_Dy = vehicle_params['c_Dy']  # drag coeff, N/(m/s)**2
+        self.c_Dz = vehicle_params['c_Dz']  # drag coeff, N/(m/s)**2
+
+        self.num_rotors = vehicle_params['num_rotors']
+        self.rotor_pos = vehicle_params['rotor_pos']
+        self.rotor_dir = vehicle_params['rotor_directions']
+
+        # Rotor parameters    
+        self.rotor_speed_min = vehicle_params['rotor_speed_min']  # rad/s
+        self.rotor_speed_max = vehicle_params['rotor_speed_max']  # rad/s
+
+        self.k_eta = vehicle_params['k_eta']      # thrust coeff, N/(rad/s)**2
+        self.k_m = vehicle_params['k_m']          # yaw moment coeff, Nm/(rad/s)**2
+        self.k_d = vehicle_params['k_d']          # rotor drag coeff, N/(m/s)
+        self.k_z = vehicle_params['k_z']          # induced inflow coeff N/(m/s)
+        self.k_flap = vehicle_params['k_flap']    # Flapping moment coefficient Nm/(m/s)
+
+        # Motor parameters
+        self.tau_m = vehicle_params['tau_m']      # motor reponse time, seconds
+
+        # Common constants
+        self.inertia = np.array([[self.Ixx, self.Ixy, self.Ixz],
+                                [self.Ixy, self.Iyy, self.Iyz],
+                                [self.Ixz, self.Iyz, self.Izz]])  # kg*m^2
+        self.g = 9.81  # m/s^2
+
+        # Linear map from individual rotor forces to scalar thrust and vector
+        # moment applied to the vehicle.
+        k = self.k_m/self.k_eta  # Ratio of torque to thrust coefficient. 
+
+        # Below is an automated generation of the control allocator matrix. It assumes that all thrust vectors are aligned
+        # with the z axis.
+        self.f_to_TM = np.vstack((np.ones((1,self.num_rotors)),
+                                  np.hstack([np.cross(self.rotor_pos[key],np.array([0,0,1])).reshape(-1,1)[0:2] for key in self.rotor_pos]), 
+                                 (k * self.rotor_dir).reshape(1,-1)))
+        self.TM_to_f = np.linalg.inv(self.f_to_TM)
+
+        # Body Axis
+        self.e1 = np.array([1, 0, 0])
+        self.e2 = np.array([0, 1, 0])
+        self.e3 = np.array([0, 0, 1])
+
+    @abstractmethod
     def update(self, t, state, flat_output):
         """
+        Abstract method that must be implemented by child classes.
         This function receives the current time, true state, and desired flat
         outputs. It returns the command inputs.
 
@@ -49,8 +106,6 @@ class MultirotorControlTemplate(object):
 
         Outputs:
             control_input, a dict describing the present computed control inputs with keys
-
-                key, description, unit, (applicable control abstraction)                                                        
                 cmd_motor_speeds, the commanded speed for each motor, rad/s, (cmd_motor_speeds)
                 cmd_thrust, the collective thrust of all rotors, N, (cmd_ctatt, cmd_ctbr, cmd_ctbm)
                 cmd_moment, the control moments on each boxy axis, N*m, (cmd_ctbm)
@@ -58,21 +113,4 @@ class MultirotorControlTemplate(object):
                 cmd_w, desired angular rates in body frame, rad/s, (cmd_ctbr)
                 cmd_v, desired velocity vector in world frame, m/s (cmd_vel)
         """
-
-        # Only some of these are necessary depending on your desired control abstraction. 
-        cmd_motor_speeds = np.zeros((4,))
-        cmd_motor_thrusts = np.zeros((4,))
-        cmd_thrust = 0
-        cmd_moment = np.zeros((3,))
-        cmd_q = np.array([0,0,0,1])
-        cmd_w = np.zeros((3,))
-        cmd_v = np.zeros((3,))
-
-        control_input = {'cmd_motor_speeds':cmd_motor_speeds,
-                         'cmd_motor_thrusts':cmd_motor_thrusts,
-                         'cmd_thrust':cmd_thrust,
-                         'cmd_moment':cmd_moment,
-                         'cmd_q':cmd_q,
-                         'cmd_w':cmd_w,
-                         'cmd_v':cmd_v}
-        return control_input
+        pass
