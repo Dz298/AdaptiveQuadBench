@@ -79,12 +79,12 @@ class GeoControl(object):
             'R': 0.3*np.ones(3).reshape(3,1),
             'W': 0.03*np.ones(3).reshape(3,1),
         }
-        # self.k = {
-        #     'x': np.array([8,8,10]).reshape(3,1),
-        #     'v': np.array([4,4,6]).reshape(3,1),
-        #     'R': 0.3*np.ones(3).reshape(3,1),
-        #     'W': 0.03*np.ones(3).reshape(3,1),
-        # }
+        self.k = {
+            'x': np.array([6.5,6.5,15]).reshape(3,1),
+            'v': np.array([4,4,9]).reshape(3,1),
+            'R': 0.3*np.ones(3).reshape(3,1),
+            'W': 0.03*np.ones(3).reshape(3,1),
+        }
         
         # Q2s real params: 14 15 15 1.50 0.90 1.10 0.55 0.35 0.15 0.04 0.03 0.01
         
