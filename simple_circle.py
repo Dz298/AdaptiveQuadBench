@@ -57,8 +57,8 @@ Instantiation
 sim_instance = Environment(vehicle=Multirotor(quad_params,control_abstraction='cmd_ctbm'),           # vehicle object, must be specified.  # ! choose the appropriate control abstraction
                            #controller=GeometricAdaptiveController(quad_params),        # ! Replace your Controller here 
                         #    controller=SE3Control(quad_params),
-                        #    controller=GeoControl(quad_params),
-                            controller=L1_GeoControl(quad_params),
+                            controller=GeoControl(quad_params),
+                            #controller=L1_GeoControl(quad_params),
                            trajectory=CircularTraj(radius=2),         # trajectory object, must be specified.
                         #    wind_profile=SinusoidWind(),               # OPTIONAL: wind profile object, if none is supplied it will choose no wind. 
                            sim_rate     = 100,                        # OPTIONAL: The update frequency of the simulator in Hz. Default is 100 Hz.
