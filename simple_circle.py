@@ -15,6 +15,7 @@ from rotorpy.controllers.quadrotor_control import SE3Control
 from controller.geometric_adaptive_controller import GeometricAdaptiveController
 from controller.geometric_control import GeoControl
 from controller.geometric_control_l1 import L1_GeoControl
+from controller.quadrotor_control_mpc import ModelPredictiveControl
 
 # And a trajectory generator
 from rotorpy.trajectories.hover_traj import HoverTraj
@@ -57,10 +58,11 @@ Instantiation
 sim_instance = Environment(vehicle=Multirotor(quad_params,control_abstraction='cmd_ctbm'),           # vehicle object, must be specified.  # ! choose the appropriate control abstraction
                            #controller=GeometricAdaptiveController(quad_params),        # ! Replace your Controller here 
                         #    controller=SE3Control(quad_params),
-                            controller=GeoControl(quad_params),
-                            #controller=L1_GeoControl(quad_params),
+                            #controller=GeoControl(quad_params),
+                           controller=L1_GeoControl(quad_params),
                            trajectory=CircularTraj(radius=2),         # trajectory object, must be specified.
                         #    wind_profile=SinusoidWind(),               # OPTIONAL: wind profile object, if none is supplied it will choose no wind. 
+                           #wind = ConstantWind(1,1,1)
                            sim_rate     = 100,                        # OPTIONAL: The update frequency of the simulator in Hz. Default is 100 Hz.
                            imu          = None,                       # OPTIONAL: imu sensor object, if none is supplied it will choose a default IMU sensor.
                            mocap        = None,                       # OPTIONAL: mocap sensor object, if none is supplied it will choose a default mocap.  
