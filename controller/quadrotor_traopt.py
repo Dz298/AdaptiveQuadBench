@@ -18,7 +18,7 @@ import casadi as cs
 import numpy as np
 from copy import copy
 from acados_template import AcadosOcp, AcadosOcpSolver, AcadosModel
-from rotorpy.controllers.quadrotor_util import skew_symmetric, v_dot_q, safe_mkdir_recursive, quaternion_inverse, discretize_dynamics_and_cost
+from controller.quadrotor_util import skew_symmetric, v_dot_q, safe_mkdir_recursive, quaternion_inverse, discretize_dynamics_and_cost
 
 class QuadOptimizer:
     def __init__(self, quad_params, t_horizon=1, n_nodes=5,

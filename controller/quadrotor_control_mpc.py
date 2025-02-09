@@ -4,8 +4,7 @@ from collections import deque
 from scipy.spatial.transform import Rotation
 from rotorpy.trajectories.hover_traj  import HoverTraj
 from controller.quadrotor_mpc import QuadMPC
-from rotorpy.controllers.quadrotor_util import skew_symmetric, v_dot_q, quaternion_inverse
-from rotorpy.learning.util import compute_res
+from controller.quadrotor_util import skew_symmetric, v_dot_q, quaternion_inverse
 class ModelPredictiveControl(object):
     """
 
