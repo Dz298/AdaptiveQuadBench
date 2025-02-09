@@ -86,8 +86,8 @@ class L1_GeoControl(object):
         }
         #for humming brid
         self.k = {
-            'x': np.array([6.5,6.5,15]).reshape(3,1),
-            'v': np.array([4,4,9]).reshape(3,1),
+            'x': np.array([4,4,9]).reshape(3,1),
+            'v': np.array([2,2,4]).reshape(3,1),
             'R': 0.3*np.ones(3).reshape(3,1),
             'W': 0.03*np.ones(3).reshape(3,1),
         }
