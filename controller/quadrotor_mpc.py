@@ -1,7 +1,6 @@
 import numpy as np
-import tensorflow as tf
 # from rotorpy.controllers.quadrotor_traopt import QuadOptimizer
-from rotorpy.controllers.quadrotor_traopt import QuadOptimizer
+from controller.quadrotor_traopt import QuadOptimizer
 from rotorpy.vehicles.crazyflie_params import quad_params
 from rotorpy.vehicles.hummingbird_params import quad_params  # There's also the Hummingbird
 from rotorpy.trajectories.circular_traj  import CircularTraj, ThreeDCircularTraj

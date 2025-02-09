@@ -3,7 +3,7 @@ from time import time
 from collections import deque
 from scipy.spatial.transform import Rotation
 from rotorpy.trajectories.hover_traj  import HoverTraj
-from rotorpy.controllers.quadrotor_mpc import QuadMPC
+from controller.quadrotor_mpc import QuadMPC
 from rotorpy.controllers.quadrotor_util import skew_symmetric, v_dot_q, quaternion_inverse
 from rotorpy.learning.util import compute_res
 class ModelPredictiveControl(object):
