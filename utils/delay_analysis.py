@@ -7,6 +7,7 @@ from rotorpy.wind.default_winds import NoWind
 from rotorpy.trajectories.random_motion_prim_traj import RapidTrajectory
 from rotorpy.trajectories.hover_traj import HoverTraj
 from rotorpy.trajectories.circular_traj import CircularTraj
+from utils.plotting_utils import ModifyPlotForPublication
 
 class DelayedControllerWrapper:
     """
@@ -318,11 +319,14 @@ def visualize_delay_response(controller_type, results, save_path=None):
             selected_delays.append(unstable_delays[0])  # Smallest unstable delay
     else:
         selected_delays = delays
-    
-    fig, axes = plt.subplots(len(selected_delays), 2, figsize=(12, 4*len(selected_delays)))
+
+    ModifyPlotForPublication()
+    print(len(selected_delays))
+    fig, axes = plt.subplots(len(selected_delays), 2, figsize=(6, 2*len(selected_delays)))
     if len(selected_delays) == 1:
         axes = np.array([axes])
     
+    colors = ['b', 'g', 'r']
     for i, delay in enumerate(selected_delays):
         result = results[delay]['result']
         time = result['time']
@@ -331,8 +335,8 @@ def visualize_delay_response(controller_type, results, save_path=None):
         
         # Position tracking
         for j in range(3):
-            axes[i, 0].plot(time, pos[:, j], label=f'Actual {["x", "y", "z"][j]}')
-            axes[i, 0].plot(time, pos_des[:, j], '--', label=f'Desired {["x", "y", "z"][j]}')
+            axes[i, 0].plot(time, pos[:, j],color=colors[j], label=f'Actual {["x", "y", "z"][j]}')
+            axes[i, 0].plot(time, pos_des[:, j], '--',color=colors[j], label=f'Desired {["x", "y", "z"][j]}')
         
         axes[i, 0].set_title(f'Position Tracking (Delay = {delay:.3f}s)')
         axes[i, 0].set_xlabel('Time [s]')

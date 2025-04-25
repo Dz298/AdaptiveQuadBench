@@ -7,40 +7,75 @@ from quad_param.quadrotor import quad_params
 
 
 
-def ModifyPlotForPublication(text_size=10, tick_size=10, legend_size=10):
-    """Set matplotlib parameters for publication quality plots"""
-    rcParams['axes.labelsize'] = text_size
-    rcParams['axes.formatter.use_mathtext'] = True
-    rcParams['xtick.labelsize'] = tick_size
-    rcParams['ytick.labelsize'] = tick_size
-    rcParams['legend.fontsize'] = legend_size
-    rcParams['font.family'] = 'serif'
-    rcParams['font.serif'] = ['cmr10']
-    rcParams['text.usetex'] = True
+def ModifyPlotForPublication(text_size=9, tick_size=8, legend_size=8, figure_dpi=300):
+    """Set matplotlib parameters for IEEE publication quality plots"""
+    # Clear any existing rcParams to avoid conflicts
+    plt.rcdefaults()
+    
+    # Set the font sizes
+    plt.rcParams['font.size'] = text_size  # Base font size
+    plt.rcParams['axes.labelsize'] = text_size
+    plt.rcParams['axes.titlesize'] = text_size
+    plt.rcParams['xtick.labelsize'] = tick_size
+    plt.rcParams['ytick.labelsize'] = tick_size
+    plt.rcParams['legend.fontsize'] = legend_size
+    
+    # Set font family and enable LaTeX rendering
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.serif'] = ['Times New Roman']  # IEEE preferred font
+    plt.rcParams['text.usetex'] = True
+    plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
+    
+    # Set figure properties for consistent sizing
+    plt.rcParams['figure.dpi'] = figure_dpi  # Screen display DPI
+    plt.rcParams['savefig.dpi'] = figure_dpi  # Saved figure DPI
+    
+    # Additional settings for publication quality
+    plt.rcParams['axes.formatter.use_mathtext'] = True
+    plt.rcParams['lines.linewidth'] = 0.5
+    plt.rcParams['axes.linewidth'] = 0.5
+    plt.rcParams['grid.linewidth'] = 0.5
+    plt.rcParams['xtick.major.width'] = 0.5
+    plt.rcParams['ytick.major.width'] = 0.5
+    plt.rcParams['xtick.minor.width'] = 0.5
+    plt.rcParams['ytick.minor.width'] = 0.5
+    
+    # Improve spacing to avoid text overlap
+    plt.rcParams['figure.autolayout'] = False  # Disable autolayout to use tight_layout instead
+    plt.rcParams['figure.constrained_layout.use'] = True  # Disable constrained_layout
+    
+    # # Adjust margins to give more space for labels
+    # plt.rcParams['figure.subplot.left'] = 0.15
+    # plt.rcParams['figure.subplot.right'] = 0.95
+    # plt.rcParams['figure.subplot.bottom'] = 0.15
+    # plt.rcParams['figure.subplot.top'] = 0.95
+    
+    # # Adjust spacing between subplots
+    # plt.rcParams['figure.subplot.wspace'] = 0.3  # Width space
+    # plt.rcParams['figure.subplot.hspace'] = 0.4  # Height space
 
 def plot_3d_trajectory(ax, sim_results, controller_types, controller_palette,
                        elev=20, azim=-75,roll=0):
     """Plot 3D trajectory comparison"""
     x_des = sim_results[0]['flat']['x']
     ax.plot(x_des[:,0], x_des[:,1], x_des[:,2], 'k--', label='Desired')
-    ax.scatter(x_des[0,0], x_des[0,1], x_des[0,2], color='red', label='Start')
-    ax.scatter(x_des[-1,0], x_des[-1,1], x_des[-1,2], color='blue', label='End')
+    # ax.scatter(x_des[0,0], x_des[0,1], x_des[0,2], color='red', label='Start')
+    # ax.scatter(x_des[-1,0], x_des[-1,1], x_des[-1,2], color='blue', label='End')
     
     for result, ctrl_type in zip(sim_results, controller_types):
         x = result['state']['x']
         ax.plot(x[:,0], x[:,1], x[:,2], label=ctrl_type, 
                 color=controller_palette[controller_types.index(ctrl_type)],linewidth=2)
-    
-    ax.set_xlabel('X [m]')
-    ax.set_ylabel('Y [m]')
-    ax.set_zlabel('Z [m]')
     ax.set_zlim(-2,2)
     # ax.set_title('3D Trajectory')
     ax.xaxis.pane.fill = False
     ax.yaxis.pane.fill = False
     ax.zaxis.pane.fill = False
     ax.view_init(elev=elev, azim=azim, roll=roll)
-    ax.legend(loc='best')
+    # ax.legend(loc='upper center', bbox_to_anchor=(0., 1.02, 1., .102))
+    ax.legend(loc='upper left',ncol=1,
+    bbox_to_anchor=(-0.05, 1.15),  
+    borderaxespad=0.0)
 
 def plot_position_error(ax, sim_results, controller_types, controller_palette):
     """Plot position tracking error norm for all controllers"""
@@ -52,7 +87,7 @@ def plot_position_error(ax, sim_results, controller_types, controller_palette):
         ax.plot(time, pos_error, label=ctrl_type, 
                 color=controller_palette[controller_types.index(ctrl_type)])
     
-    ax.set_ylabel('$\| \mathbf{x} - \mathbf{x}_{des} \|_2$ [m]')
+    ax.set_ylabel('$\| \mathbf{x} - \mathbf{x}_{\mathrm{des}} \|_2$ [m]')
     ax.legend()
     ax.grid(True)
 
@@ -153,6 +188,7 @@ def plot_rotor_speeds_subplot(fig, pos, result, ctrl_type, is_leftmost, ymin, ym
     ax.legend()
     ax.grid(True)
     ax.set_ylim(ymin, ymax) 
+    return ax
 
 def plot_drone(ax):
     # Draw quadrotor configuration
@@ -176,10 +212,7 @@ def plot_drone(ax):
     rotor_directions = quad_params['rotor_directions']
     for i, (pos, direction) in enumerate(zip(rotor_positions, rotor_directions)):
         # Plot rotor position
-        ax.plot(pos[0], pos[1], 'ko', markersize=8)
-        
-        # Add rotor labels
-        ax.annotate(f'mot{i}', pos, xytext=(5, 5), textcoords='offset points')
+        ax.plot(pos[0], pos[1], 'ko', markersize=10)
     # Set equal axis limits centered on zero
     limit = 1.5 * quad_params['arm_length']
     ax.set_xlim(-limit, limit)
@@ -194,7 +227,7 @@ def plot_model_uncertainty(ax,controller_param, vehicle_params):
         ]
         params_to_label = [
             '$m$', '$\mathbf{J}_{xx}$', '$\mathbf{J}_{yy}$', '$\mathbf{J}_{zz}$', '$l$',
-            '$k_{t}$', '$k_{\tau}$', '$\omega_{\max}$'
+            '$k_{t}$', '$k_{\\tau}$', '$\omega_{\max}$'
         ]
         
         # Normalize values for comparison
@@ -224,8 +257,11 @@ def plot_model_uncertainty(ax,controller_param, vehicle_params):
         ax.fill(angles, values_gt, alpha=0.25)
         ax.fill(angles, values_ref, alpha=0.25)
         
+        ax.set_yticks([0.25, 1.0])
+        ax.set_yticklabels(['25\%', '100\%'])
+
         # Set the labels
         ax.set_xticks(angles[:-1])
         ax.set_xticklabels(params_to_label[:-1])
-        ax.legend()
-        ax.set_title('Model Parameter Comparison \n(Normalized to Reference Values)', pad=30)  # Increase pad value if needed
+        ax.legend(loc='upper left',ncol=2,bbox_to_anchor=(-0.2, -0.25),borderaxespad=0.0,fontsize=6)
+        ax.set_title('Model Parameter Comparison\n(Normalized to Reference Values)', pad=25)  # Increase pad value if needed
