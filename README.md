@@ -24,12 +24,6 @@ AdaptiveQuadBench is a standarized testbed for adaptive quadrotor controllers, b
 
 ### Installation Steps
 
-<!-- 1. Clone the repository and initialize submodules:
-   ```bash
-   git clone https://github.com/Dz298/AdaptiveQuadBench.git
-   cd AdaptiveQuadBench
-   git submodule update --init --recursive
-   ``` -->
 1. Download the repository
 
 2. Create and activate the conda environment:
@@ -83,17 +77,6 @@ Results are saved in the `data` directory and can be visualized using the includ
 ## Citation
 
 If you use AdaptiveQuadBench in your research, please cite: **Hide the info for double-blind review process**
-
-<!-- ```bibtex
-@misc{zhang2025adaptivequadbench,
-  author = {Zhang, Dingqi},
-  title = {AdaptiveQuadBench: A Benchmarking Framework for Adaptive Quadrotor Control},
-  year = {2025},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/Dz298/AdaptiveQuadBench}}
-}
-``` -->
 
 Additionally, please cite the specific controller implementations you use:
 
