@@ -48,12 +48,12 @@ class NeuralNetworkModel:
     def __init__(self):
         # Load model paths
         current_path = os.path.dirname(os.path.abspath(__file__)) + '/models/Xadap/'
-        self.base_model_path = current_path + 'mlp_1014.onnx'
-        self.adap_module_path = current_path + 'encoder_1014.onnx'
+        self.base_model_path = current_path + 'mlp.onnx'
+        self.adap_module_path = current_path + 'encoder.onnx'
         
         # Load normalization parameters
-        self.obs_mean = np.loadtxt(current_path+'mean_1014.csv', delimiter=" ")
-        self.obs_var = np.loadtxt(current_path+'var_1014.csv', delimiter=" ")
+        self.obs_mean = np.loadtxt(current_path+'mean.csv', delimiter=" ")
+        self.obs_var = np.loadtxt(current_path+'var.csv', delimiter=" ")
         
         # Action normalization parameters
         self.act_mean = np.array([0.5, 0.5, 0.5, 0.5])[np.newaxis, :]
