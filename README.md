@@ -18,10 +18,6 @@ AdaptiveQuadBench is a standarized testbed for adaptive quadrotor controllers, b
 - Conda package manager
 - Git
 
-### Optional Dependencies
-
-- [acados python interface](https://docs.acados.org/python_interface/index.html#installation) (required for MPC controllers)
-
 ### Installation Steps
 
 1. Download the repository
@@ -32,7 +28,45 @@ AdaptiveQuadBench is a standarized testbed for adaptive quadrotor controllers, b
    conda activate quadbench
    ```
 
-3. If you plan to use MPC controllers, install acados following the instructions at the [official documentation](https://docs.acados.org/python_interface/index.html#installation).
+3. If you plan to use MPC controllers, install acados following these steps:
+
+   **Step 1: Clone acados repository**
+   ```bash
+   git clone https://github.com/acados/acados.git
+   cd acados
+   git submodule update --recursive --init
+   ```
+
+   **Step 2: Build and install acados**
+   ```bash
+   mkdir -p build
+   cd build
+   cmake -DACADOS_WITH_QPOASES=ON ..
+   make install -j4
+   ```
+
+   **Step 3: Install Python interface**
+   ```bash
+   pip install -e <acados_root>/interfaces/acados_template
+   ```
+   Note: Replace `<acados_root>` with the actual path to your acados directory.
+
+   **Step 4: Set environment variables**
+   ```bash
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"<acados_root>/lib"
+   export ACADOS_SOURCE_DIR="<acados_root>"
+   ```
+   Note: On MacOS, use `DYLD_LIBRARY_PATH` instead of `LD_LIBRARY_PATH`.
+   
+   **Step 5: Verify installation**
+   ```bash
+   cd <acados_root>/examples/acados_python/getting_started/
+   python minimal_example_ocp.py
+   ```
+   If this runs without errors, your acados installation is working correctly.
+
+   **Step 6: Make environment variables permanent (optional)**
+   Add the export commands to your `~/.bashrc` or `~/.zshrc` file to avoid setting them every time you open a new terminal.
 
 ## Usage
 
@@ -89,7 +123,7 @@ Additionally, please cite the specific controller implementations you use:
   * L1 Adaptive Geometric Controller described in [Wu arXiv'23](https://arxiv.org/abs/2302.07208)
   * L1 Adaptive MPC described in [Tao ACC'24](https://doi.org/10.23919/ACC60939.2024.10644611)
   * Adaptive INDI described in [Smeur JGCD'15](https://doi.org/10.2514/1.G001490) and [Tal TCST'21](https://doi.org/10.1109/TCST.2020.3001117)
-  * Learning-based Extreme Adaptation Controller described in [Zhang arXiv'24](https://arxiv.org/abs/2409.12949)
+  * Learning-based Extreme Adaptation Controller described in [Zhang TRO'25](https://doi.org/10.1109/TRO.2025.3577037)
 
 
 ## License

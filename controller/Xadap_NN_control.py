@@ -2,7 +2,8 @@
 Python implementation of Learning-based Controller for Extreme Adaptation based on:
 Dingqi Zhang, Antonio Loquercio, Jerry Tang, Ting-Hao Wang, Jitendra Malik, Mark W. Mueller.
 "A Learning-based Quadcopter Controller with Extreme Adaptation"
-[arXiv:2409.12949]
+IEEE Transactions on Robotics, 41(2):3948-3964, 2025.
+https://doi.org/10.1109/TRO.2025.3577037
 """
 
 # import numpy as np
